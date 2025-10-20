@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Cookie Master</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <h1>Cookie Master</h1>
+  
+  <div class="container">
+    <div class="controls">
+      <input type="text" id="filter-input" placeholder="按键名或域名过滤...">
+      <button id="add-new-cookie-btn" title="添加新 Cookie"> + </button>
+      <button id="refresh-btn" title="刷新列表"> &#x21bb; </button>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>键 (Name)</th>
+            <th>值 (Value)</th>
+            <th>网址 (Domain)</th>
+            <th>操作 (Actions)</th>
+          </tr>
+        </thead>
+        <tbody id="cookie-list">
+          </tbody>
+      </table>
+    </div>
+
+    <div class="settings-container">
+      <h2>全局设置</h2>
+      
+      <div class="setting-section">
+        <h3>Cookie 锁死 (Locking)</h3>
+        <p>将 Cookie 的值固定, 对所有域名生效。</p>
+        <div class="setting-form">
+          <input type="text" id="lock-name-input" placeholder="Cookie 键 (Name)">
+          <input type="text" id="lock-value-input" placeholder="要锁定的值 (Value)">
+          <button id="add-lock-btn">添加</button>
+        </div>
+        <ul id="locked-list" class="settings-list"></ul>
+      </div>
+
+      <div class="setting-section">
+        <h3>Cookie 黑名单 (Blacklist)</h3>
+        <p>阻止浏览器保留此 Cookie, 对所有域名生效。</p>
+        <div class="setting-form">
+          <input type="text" id="blacklist-name-input" placeholder="Cookie 键 (Name)">
+          <button id="add-blacklist-btn">拉黑</button>
+        </div>
+        <ul id="blacklisted-list" class="settings-list"></ul>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
