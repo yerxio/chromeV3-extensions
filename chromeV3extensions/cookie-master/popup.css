@@ -1,150 +1,501 @@
+/* -------------------- 全局和基础设置 -------------------- */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  width: 700px;
-  max-height: 500px;
-  overflow-y: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* 【修改】将固定宽度改为较窄的侧边栏宽度 */
+  width: 100%; 
+  /* 【修改】允许高度自适应，并移除 body 上的 max-height 限制 */
+  max-height: none; 
+  overflow-y: auto; /* 允许侧边栏内容溢出时滚动 */
   margin: 0;
-  padding: 10px;
-  background-color: #f9f9f9;
+  padding: 15px; 
+  background-color: #f0f2f5; 
+  color: #333;
 }
 
-h1, h2, h3 {
-  color: #333;
-  border-bottom: 1px solid #ddd;
-  padding-bottom: 5px;
+header h1 {
+  /* 标题使用柔和的颜色，并移除底线 */
+  color: #007bff;
+  margin: 0 0 5px 0;
+  padding-bottom: 0;
+  border-bottom: none;
+  font-size: 24px;
 }
-h1 {
-  margin-top: 0;
+
+header p {
+  color: #6c757d;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+h2, h3 {
+  color: #495057;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 5px;
+  margin-top: 15px;
+  font-weight: 600;
+}
+h2 {
+    font-size: 18px;
+}
+h3 {
+    font-size: 16px;
 }
 
 .container {
   display: flex;
   flex-direction: column;
-  height: 480px; /* 限制总高度 */
+  /* 允许 container 自适应，但受制于 body 的 max-height */
+  height: auto; 
+  gap: 15px; 
 }
 
-.controls {
-  display: flex;
-  margin-bottom: 10px;
+/* -------------------- 顶部控制区 -------------------- */
+.controls-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    /* 确保 filter-input 后的所有操作按钮都在右侧 */
+    justify-content: space-between;
 }
 
 #filter-input {
-  flex-grow: 1;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+    /* 给予搜索框固定宽度，避免被按钮挤压 */
+    width: 250px; 
 }
 
-.controls button {
-  padding: 8px 12px;
-  margin-left: 5px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
+#filter-input:focus {
+    border-color: #007bff;
+    outline: none;
 }
-#refresh-btn {
-  background-color: #6c757d;
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.unified-group {
+    display: flex;
+    gap: 5px;
+    border: 1px solid #ced4da; /* 边框区分 */
+    padding: 3px;
+    border-radius: 8px;
+}
+
+.action-buttons.disabled .unified-group button {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none; /* 禁用点击事件 */
+}
+
+.unified-group .icon-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+    line-height: 14px;
+    padding: 0;
+}
+
+/* 统一按钮样式 */
+.controls-bar button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.primary-btn { /* '创建新 Cookie' 按钮 */
+  background-color: #28a745; /* 绿色，代表新增/成功 */
+  color: white;
+}
+.primary-btn:hover {
+  background-color: #218838;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.icon-btn { /* '刷新' 按钮 */
+  background-color: #6c757d; /* 灰色 */
+  color: white;
+  width: 40px; /* 保持图标按钮为正方形 */
+  height: 40px;
+  line-height: 20px;
+  padding: 0;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-btn:hover {
+  background-color: #5a6268;
+}
+
+
+/* -------------------- Cookie 列表区 -------------------- */
+.cookie-list-section {
+  background-color: white;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  /* 关键：使用 flex-grow 占据可用空间，并将高度限制在可管理范围内 */
+  flex-grow: 1; 
+  max-height: none;
+  max-height: 280px; /* 限制 Cookie 列表的最大高度，为设置区保留空间 */
+  display: flex; /* 启用 flex 布局来控制内部 table-container 的高度 */
+  flex-direction: column;
+}
+
+.cookie-list-section h2 {
+    /* 确保 H2 不被滚动条影响 */
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+}
+
+#cookie-list tr.selected {
+    background-color: #e0f7fa !important; /* 更亮的背景色，!important 确保覆盖斑马纹 */
+    border: 2px solid #00bcd4;
+    cursor: pointer;
+}
+
+#cookie-list tr td:not(:last-child) { 
+    cursor: copy; /* 鼠标悬停时显示复制图标 */
 }
 
 .table-container {
-  flex-grow: 1; /* 占据剩余空间 */
-  overflow-y: auto; /* 核心：使表格可滚动 */
-  border: 1px solid #ddd;
+  /* 关键：强制 table-container 占据所有剩余高度并启用滚动 */
+  flex-grow: 1; 
+  overflow-y: auto; 
+  border: 1px solid #e9ecef; 
   background-color: #fff;
+  margin-top: 0; /* 移除顶部 margin */
+  border-radius: 4px;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
+  /* 确保表格宽度不会溢出 table-container，即使内容很长 */
+  table-layout: fixed; 
 }
 
 th, td {
-  border-bottom: 1px solid #ddd;
-  padding: 8px;
+  border-bottom: 1px solid #f8f9fa;
+  padding: 10px 12px;
   text-align: left;
-  word-break: break-all;
+  /* 确保长内容强制换行 */
+  word-wrap: break-word; 
+  white-space: normal;
 }
 
+
+th:nth-child(1), td:nth-child(1) { /* 键 (Name) */
+    width: 30%; 
+}
+th:nth-child(2), td:nth-child(2) { /* 值 (Value) */
+    width: 45%;
+}
+th:nth-child(3), td:nth-child(3) { /* 域/路径 (Domain/Path) */
+    width: 25%;
+    font-size: 12px; /* 域名适当缩小字体 */
+}
+th:nth-child(4), td:nth-child(4) { /* 操作 (Actions) */
+    width: 20%; 
+}
+
+
+
 th {
-  background-color: #f2f2f2;
-  position: sticky; /* 表头粘性 */
+  background-color: #f8f9fa;
+  color: #495057;
+  position: sticky;
   top: 0;
+  z-index: 10;
+  font-weight: 600;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f8f9fa; /* 斑马纹 */
 }
 
 /* 编辑状态 */
 td input[type="text"] {
   width: 95%;
-  padding: 4px;
+  padding: 6px;
   border: 1px solid #007bff;
+  border-radius: 4px;
 }
 
 .cookie-actions button {
   font-size: 12px;
-  padding: 3px 6px;
-  margin-right: 3px;
+  padding: 3px 5px; /* 缩小内边距 */
+  margin: 0; /* 移除 margin */
   cursor: pointer;
-  border-radius: 3px;
-  border: 1px solid #ccc;
+  border-radius: 4px;
+  border: none;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap; /* 确保按钮文本不换行 */
 }
-.btn-save { background-color: #28a745; color: white; border-color: #28a745; }
-.btn-edit { background-color: #ffc107; }
-.btn-delete { background-color: #dc3545; color: white; border-color: #dc3545; }
-.btn-lock { background-color: #17a2b8; color: white; border-color: #17a2b8; }
-.btn-blacklist { background-color: #343a40; color: white; border-color: #343a40; }
 
-/* 设置区域 */
-.settings-container {
-  flex-shrink: 0; /* 不收缩 */
-  margin-top: 15px;
-  padding-top: 10px;
-  border-top: 2px solid #007bff;
-  display: flex;
-  justify-content: space-between;
+.cookie-actions button:hover {
+    opacity: 0.9;
 }
-.setting-section {
-  width: 48%;
+
+
+.cookie-actions {
+    /* 使用 Flexbox 确保操作按钮水平排列不换行 */
+    display: flex;
+    flex-wrap: nowrap; /* 关键：强制不换行 */
+    gap: 3px; /* 按钮间距 */
 }
-.setting-section p {
+
+/* 优化按钮配色 */
+.btn-save { background-color: #28a745; }
+.btn-edit { background-color: #ffc107; color: #333; }
+.btn-delete { background-color: #dc3545; }
+.btn-lock { background-color: #17a2b8; }
+.btn-blacklist { background-color: #343a40; }
+
+
+/* -------------------- 设置区域 -------------------- */
+/* -------------------- 设置区域 -------------------- */
+.global-settings-section {
+  flex-shrink: 0;
+  margin-top: 0;
+  padding-top: 15px;
+  border-top: 2px solid #007bff; /* 强调分割线 */
+  /* 移除 display: flex; 以允许标题位于上方 */
+}
+
+/* 新增样式：确保标题在顶部 */
+#global-settings-title {
+    margin-top: 0;
+    margin-bottom: 15px; /* 增加标题和卡片之间的间距 */
+    padding-bottom: 5px;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 18px;
+    font-weight: 600;
+    color: #495057;
+}
+
+/* 包含卡片的容器，使用 Flexbox 实现左右布局和自动换行 */
+.settings-content-wrapper {
+    display: flex;
+    flex-direction: column; /* 【修改】强制垂直堆叠，消除左右布局 */
+    gap: 15px; /* 调整卡片之间的间距 */
+    /* 移除 justify-content: space-between; */
+    flex-wrap: nowrap; /* 不允许换行 */
+}
+
+.setting-card {
+    /* 【删除或注释掉这两行】 */
+    /* width: calc(50% - 10px); */ 
+    /* min-width: 300px; */
+    
+    /* 【新增】确保卡片占据全部可用宽度 */
+    width: 100%; 
+    
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.setting-card h3 {
+    margin-top: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+    font-size: 16px;
+}
+
+.setting-card p {
   font-size: 12px;
-  color: #555;
+  color: #6c757d;
+  margin-top: 5px;
+  margin-bottom: 15px;
 }
+
 .setting-form {
   display: flex;
+  gap: 5px;
   margin-bottom: 10px;
+  align-items: center; /* 确保输入框和按钮垂直居中对齐 */
 }
+
+/* 针对所有 setting-card 中的输入框的通用样式 */
 .setting-form input {
-  flex-grow: 1;
-  margin-right: 5px;
-  border: 1px solid #ccc;
-  padding: 5px;
+  flex-grow: 1; /* 默认允许输入框拉伸 */
+  min-width: 80px; /* 确保最小宽度，防止文本被截断 */
+  border: 1px solid #ced4da;
+  padding: 8px;
+  border-radius: 4px;
 }
+
+/* 针对 Cookie 锁死（两个输入框 + 一个按钮）的特殊优化 */
+#locking-section .setting-form input {
+    /* 两个输入框，让它们平分剩余空间 */
+    flex-grow: 1; 
+    flex-basis: 0; /* 允许 flex-grow 均匀分配 */
+    min-width: 30px; /* 确保每个输入框的最小宽度 */
+}
+
+/* 针对 Cookie 遗忘（一个输入框 + 一个按钮）的特殊优化 */
+#blacklist-section .setting-form input {
+    flex-grow: 1; /* 单个输入框，占据大部分空间 */
+    width: 30px; 
+}
+
 .setting-form button {
-  padding: 5px 10px;
-  background-color: #555;
+  /* 按钮不应拉伸，只占用其内容所需的空间 */
+  flex-shrink: 0; 
+  padding: 8px 12px;
+  /* 确保按钮内容不会换行，避免高度增加 */
+  white-space: nowrap; 
+  
+  background-color: #007bff; /* 主按钮颜色 */
   color: white;
-  border: none;
-  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s;
 }
+/* ... (其他设置区域样式保持不变) ... */
+.secondary-btn { background-color: #17a2b8; } /* 锁定：蓝色 */
+.danger-btn { background-color: #dc3545; } /* 拉黑：红色 */
+
+
 .settings-list {
   list-style: none;
   padding: 0;
-  max-height: 100px;
+  max-height: 120px; /* 增加高度 */
   overflow-y: auto;
-  font-size: 14px;
+  font-size: 13px;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
 }
 .settings-list li {
-  background-color: #eee;
-  padding: 5px;
-  margin-bottom: 3px;
+  background-color: #fff;
+  padding: 8px 10px;
+  margin-bottom: 0; /* 移除 li 间的 margin */
+  border-bottom: 1px solid #e9ecef;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+.settings-list li:last-child {
+    border-bottom: none;
+}
+
 .settings-list .remove-setting {
   cursor: pointer;
-  color: red;
+  color: #dc3545; /* 使用危险色 */
+  font-weight: 600;
+  font-size: 18px;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+.settings-list .remove-setting:hover {
+    opacity: 1;
+}
+
+#empty-list-message {
+    padding: 20px 0;
+    font-style: italic;
+    color: #999;
+}
+
+
+#copy-notification {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background-color: #28a745; /* 绿色成功提示 */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    z-index: 1000;
+}
+#copy-notification.show {
+    opacity: 1;
+}
+
+
+/* -------------------- 模态对话框 (Modal) -------------------- */
+.modal {
+  display: none; /* 默认隐藏 */
+  position: fixed; 
+  z-index: 2000; /* 确保在最顶层 */
+  left: 0;
+  top: 0;
+  width: 100%; 
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4); /* 半透明黑色背景 */
+  backdrop-filter: blur(2px);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 居中显示 */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 350px; 
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  text-align: center;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    font-size: 18px;
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.modal-content p {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 20px;
+}
+
+.close-btn {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
   font-weight: bold;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-actions button {
+    margin: 5px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    border: none;
+    transition: background-color 0.2s;
+}
+
+#confirm-cancel-btn {
+    background-color: #dc3545; /* Danger */
+    color: white;
+}
+#confirm-cancel-btn:hover {
+    background-color: #c82333;
+}
+#close-modal-btn {
+    background-color: #6c757d; /* Secondary */
+    color: white;
+}
+#close-modal-btn:hover {
+    background-color: #5a6268;
 }
