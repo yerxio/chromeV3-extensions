@@ -78,5 +78,32 @@ async function handleCookieChange(changeInfo) {
   }
 }
 
+// 【新的逻辑：处理扩展图标点击事件】
+chrome.action.onClicked.addListener(async (tab) => {
+    // 侧边栏 API 没有直接的 toggle 方法，需要通过查询当前状态来模拟开关
+    const currentTabId = tab.id;
+
+    // 尝试打开侧边栏。如果侧边栏已经打开，此操作通常会使其保持打开状态。
+    // Side Panel 在 Chrome 116+ 支持 setPanelBehavior 来实现 "保持打开"
+    try {
+        await chrome.sidePanel.open({ tabId: currentTabId });
+        console.log(`[Cookie Master] 侧边栏已打开。`);
+
+        // 注意：目前 Chrome 扩展平台没有官方 API 来判断侧边栏是否“对这个标签页”是打开的。
+        // 
+        // 替代方案 (更简单且符合用户操作习惯):
+        // 扩展图标点击后，侧边栏会固定在右侧。用户可以通过点击侧边栏的 X 或再次点击侧边栏图标
+        // 来关闭它。对于 Side Panel 来说，默认的点击行为就是打开。
+
+    } catch (error) {
+        // 如果出现错误，可能当前标签页不支持 Side Panel（例如内部页面或 about:blank）
+        console.error("[Cookie Master] 无法打开侧边栏:", error);
+    }
+});
+
+
 // 注册监听器
 chrome.cookies.onChanged.addListener(handleCookieChange);
+// 【可选】设置默认的侧边栏可见性 (仅在 Chrome 116+ 有效)
+chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true })
+    .catch((error) => console.error("设置 Panel Behavior 失败:", error));
