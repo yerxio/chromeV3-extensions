@@ -1,59 +1,96 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Cookie Master</title>
+  <title>Cookie Master 🍪</title>
   <meta charset="UTF-8">
   <link rel="stylesheet" href="popup.css">
-</head>
+  </head>
 <body>
-  <h1>Cookie Master</h1>
+  <header>
+    <h1>Cookie Fortress 🍪</h1>
+    <p>管理当前网站的数字通行证</p>
+  </header>
   
-  <div class="container">
-    <div class="controls">
-      <input type="text" id="filter-input" placeholder="按键名或域名过滤...">
-      <button id="add-new-cookie-btn" title="添加新 Cookie"> + </button>
-      <button id="refresh-btn" title="刷新列表"> &#x21bb; </button>
-    </div>
-
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>键 (Name)</th>
-            <th>值 (Value)</th>
-            <th>网址 (Domain)</th>
-            <th>操作 (Actions)</th>
-          </tr>
-        </thead>
-        <tbody id="cookie-list">
-          </tbody>
-      </table>
-    </div>
-
-    <div class="settings-container">
-      <h2>全局设置</h2>
+  <main class="container">
+    
+<section class="controls-bar">
+      <input type="text" id="filter-input" placeholder="🔍 按名称或域名搜索...">
       
-      <div class="setting-section">
-        <h3>Cookie 锁死 (Locking)</h3>
-        <p>将 Cookie 的值固定, 对所有域名生效。</p>
-        <div class="setting-form">
-          <input type="text" id="lock-name-input" placeholder="Cookie 键 (Name)">
-          <input type="text" id="lock-value-input" placeholder="要锁定的值 (Value)">
-          <button id="add-lock-btn">添加</button>
+      <div id="unified-actions" class="action-buttons disabled" title="请点击列表中任一行以激活操作">
+        <button id="add-new-cookie-btn" class="primary-btn" title="手动创建新 Cookie">
+          ✨ 创建新 Cookie
+        </button>
+        <button id="refresh-btn" class="icon-btn" title="刷新列表"> 
+          🔄
+        </button>
+        
+        <div class="unified-group" style="width: 150px;">
+            <button id="unified-edit-btn" class="icon-btn btn-edit" title="编辑选中行">✏️</button>
+            <button id="unified-save-btn" class="icon-btn btn-save" title="保存选中行">💾</button>
+            <button id="unified-lock-btn" class="icon-btn btn-lock" title="锁定选中行">🔒</button>
+            <button id="unified-delete-btn" class="icon-btn btn-delete" title="删除选中行">🗑️</button>
         </div>
-        <ul id="locked-list" class="settings-list"></ul>
       </div>
+    </section>
 
-      <div class="setting-section">
-        <h3>Cookie 黑名单 (Blacklist)</h3>
-        <p>阻止浏览器保留此 Cookie, 对所有域名生效。</p>
-        <div class="setting-form">
-          <input type="text" id="blacklist-name-input" placeholder="Cookie 键 (Name)">
-          <button id="add-blacklist-btn">拉黑</button>
+<section class="cookie-list-section">
+      <h2>🌐 当前域名的 Cookies</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>键 (Name)</th>
+              <th>值 (Value)</th>
+              <th>域/路径 (Domain/Path)</th>
+            </tr>
+          </thead>
+          <tbody id="cookie-list">
+            </tbody>
+        </table>
+        <p id="empty-list-message" style="text-align: center; color: #999;">暂无 Cookie 或列表已被过滤。</p>
+      </div>
+    </section>
+
+<section class="global-settings-section">
+      <h2 id="global-settings-title">🛡️ 全局安全策略</h2>
+      
+      <div class="settings-content-wrapper">
+        <div class="setting-card" id="locking-section">
+          <h3>🔒 Cookie 锁死 (Freezing)</h3>
+          <p>将指定 Cookie 的值**永久锁定**，阻止其被修改或过期。</p>
+          <div class="setting-form">
+            <input type="text" id="lock-name-input" placeholder="键名 (e.g., user_token)">
+            <input type="text" id="lock-value-input" placeholder="锁定的目标值">
+            <button id="add-lock-btn" class="secondary-btn" style="width: 200px;">📌 添加锁定</button>
+          </div>
+          <ul id="locked-list" class="settings-list">
+            </ul>
         </div>
-        <ul id="blacklisted-list" class="settings-list"></ul>
-      </div>
 
+        <div class="setting-card" id="blacklist-section">
+          <h3>⚫ Cookie 遗忘 (Blacklist)</h3>
+          <p>浏览器将**自动删除**此 Cookie，对所有域名永久生效。</p>
+          <div class="setting-form">
+            <input type="text" id="blacklist-name-input" placeholder="键名 (e.g., tracking_id)">
+            <button id="add-blacklist-btn" class="danger-btn" style="width: 200px;">❌ 拉入黑名单</button>
+          </div>
+          <ul id="blacklisted-list" class="settings-list">
+            </ul>
+        </div>
+      </div>
+      
+    </section>
+  </main>
+
+<div id="cancel-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <h3>取消新建 Cookie?</h3>
+      <p>您确定要取消正在创建的 Cookie 吗? 所有输入的内容将丢失。</p>
+      <div class="modal-actions">
+        <button id="confirm-cancel-btn" class="danger-btn">确定取消</button>
+        <button id="close-modal-btn" class="secondary-btn">继续编辑</button>
+      </div>
     </div>
   </div>
 
